@@ -1,27 +1,39 @@
+
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <title>BS Mods</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="https://fonts.googleapis.com/css2?family=Lilita+One&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <title>Mod</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/css2?family=Lilita+One&display=swap" rel="stylesheet" />
   <style>
+    :root {
+      --bg: #ffffff;
+      --text: #333333;
+      --item: #f2f2f2;
+      --header: #ffffff;
+      --shadow: rgba(0, 0, 0, 0.1);
+    }
+
     body {
       margin: 0;
       padding: 0;
       font-family: 'Lilita One', cursive;
-      background-color: #f2f2f2;
+      background-color: var(--bg);
+      color: var(--text);
+      transition: background-color 0.4s ease, color 0.4s ease;
     }
 
     .header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background-color: white;
-      padding: 15px 30px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      background-color: var(--header);
+      padding: 8px 16px;
+      box-shadow: 0 2px 4px var(--shadow);
       position: relative;
       z-index: 3;
+      transition: background-color 0.4s ease;
     }
 
     .branding {
@@ -31,18 +43,19 @@
     }
 
     .logo-img {
-      height: 45px; /* leicht vergrößert, aber sicher innerhalb des Headers */
-      margin-right: 12px;
+      height: 44px;
+      margin-right: 6px;
     }
 
     .logo-text {
-      font-size: 28px;
-      color: #333;
+      font-size: 24px;
+      color: var(--text);
+      transition: color 0.4s ease;
     }
 
     .menu-icon {
-      width: 30px;
-      height: 24px;
+      width: 28px;
+      height: 20px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
@@ -52,9 +65,10 @@
 
     .menu-icon span {
       display: block;
-      height: 4px;
+      height: 3px;
       border-radius: 2px;
-      background-color: #333;
+      background-color: var(--text);
+      transition: background-color 0.4s ease;
     }
 
     .overlay {
@@ -81,10 +95,10 @@
       right: -310px;
       width: 300px;
       height: 100%;
-      background-color: #fff;
+      background-color: var(--bg);
       box-shadow: -2px 0 5px rgba(0,0,0,0.2);
-      padding: 80px 20px 20px 20px;
-      transition: right 0.3s ease;
+      padding: 100px 20px 20px 20px;
+      transition: right 0.3s ease, background-color 0.4s ease;
       z-index: 2;
       overflow-y: auto;
       box-sizing: border-box;
@@ -102,7 +116,10 @@
       border-radius: 8px;
       font-size: 16px;
       font-family: 'Lilita One', cursive;
+      background-color: var(--item);
+      color: var(--text);
       box-sizing: border-box;
+      transition: background-color 0.4s ease, color 0.4s ease;
     }
 
     .menu-item {
@@ -116,16 +133,41 @@
     .menu-item:last-child {
       border-bottom: none;
     }
+
+    .dark-mode-icon {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 25px;
+    }
+
+    .dark-mode-icon img {
+      width: 32px;
+      height: 32px;
+      cursor: pointer;
+      transition: transform 0.5s ease;
+    }
+
+    .dark-mode-icon img.rotate {
+      transform: rotate(180deg);
+    }
+
+    body.dark {
+      --bg: #1e1e1e;
+      --text: #ffffff;
+      --item: #2e2e2e;
+      --header: #1e1e1e;
+      --shadow: rgba(255, 255, 255, 0.05);
+    }
   </style>
 </head>
 <body>
 
   <div class="header">
     <a href="index.html" class="branding">
-      <img src="brawl_stars_logo.png" alt="Logo" class="logo-img">
+      <img src="brawl_stars_logo.png" alt="Logo" class="logo-img" />
       <span class="logo-text">Mod</span>
     </a>
-    <div class="menu-icon" onclick="toggleMenu()" id="menuToggle">
+    <div class="menu-icon" onclick="toggleMenu()">
       <span></span>
       <span></span>
       <span></span>
@@ -135,10 +177,10 @@
   <div id="overlay" class="overlay" onclick="closeMenu()"></div>
 
   <div id="sideMenu" class="side-menu">
-    <input type="text" id="searchInput" placeholder="Suchen ..." oninput="filterMenuItems()">
+    <input type="text" id="searchInput" placeholder="Suchen ..." oninput="filterMenuItems()" />
     <div class="menu-item" data-keyword="banane">Banane</div>
     <div class="menu-item" data-keyword="rakete">Rakete</div>
-    <div class="menu-item" data-keyword="ocean">Ozean</div>
+    <div class="menu-item" data-keyword="ozean">Ozean</div>
     <div class="menu-item" data-keyword="berg">Berg</div>
     <div class="menu-item" data-keyword="wolke">Wolke</div>
     <div class="menu-item" data-keyword="tastatur">Tastatur</div>
@@ -146,14 +188,15 @@
     <div class="menu-item" data-keyword="galaxie">Galaxie</div>
     <div class="menu-item" data-keyword="pirat">Pirat</div>
     <div class="menu-item" data-keyword="laser">Laser</div>
+    <div class="dark-mode-icon">
+      <img id="modeToggle" src="moon.fill.PNG" alt="Dark Mode" onclick="toggleDarkMode()" />
+    </div>
   </div>
 
   <script>
     function toggleMenu() {
-      const menu = document.getElementById('sideMenu');
-      const overlay = document.getElementById('overlay');
-      menu.classList.toggle('open');
-      overlay.classList.toggle('show');
+      document.getElementById('sideMenu').classList.toggle('open');
+      document.getElementById('overlay').classList.toggle('show');
     }
 
     function closeMenu() {
@@ -168,6 +211,14 @@
         const keyword = item.getAttribute('data-keyword').toLowerCase();
         item.style.display = keyword.includes(input) ? 'block' : 'none';
       });
+    }
+
+    function toggleDarkMode() {
+      const body = document.body;
+      const icon = document.getElementById('modeToggle');
+      body.classList.toggle('dark');
+      icon.classList.toggle('rotate');
+      icon.src = body.classList.contains('dark') ? "sun.max.fill.PNG" : "moon.fill.PNG";
     }
   </script>
 
