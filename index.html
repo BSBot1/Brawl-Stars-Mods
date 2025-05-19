@@ -241,23 +241,60 @@ body:not(.dark) .platform-buttons button.active {
       setLanguage(lang);
       filterMenuItems();
     };
-  
-    async function checkPassword() {
-      const pw = prompt("Please enter the password:");
-      if (!pw) return;
-      const encoder = new TextEncoder();
-      const data = encoder.encode(pw);
-      const hashBuffer = await crypto.subtle.digest("SHA-256", data);
-      const hashArray = Array.from(new Uint8Array(hashBuffer));
-      const hashHex = hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
-      const validHash = "446f1c8be78b264c7f7dc817380846f443946bf8f2de7e109343507294e85908";
-      if (hashHex === validHash) {
-        alert("Access granted!");
-      } else {
-        alert("Wrong password.");
-      }
-    }
+  </script>
 
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/11.7.3/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/11.7.3/firebase-database-compat.js"></script>
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyB0mcIknatJKzJ6k85ZKrLwPMhW69AfepC",
+    authDomain: "bs-mods-links.firebaseapp.com",
+    databaseURL: "https://bs-mods-links-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "bs-mods-links"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+
+  async function checkPassword() {
+    const pw = prompt("Please enter the password:");
+    if (!pw) return;
+    const encoder = new TextEncoder();
+    const data = encoder.encode(pw);
+    const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hashHex = hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
+    const validHash = "446f1c8be78b264c7f7dc817380846f443946bf8f2de7e109343507294e85908";
+    if (hashHex === validHash) {
+      const names = ["BSD Brawl", "China Brawl Stars", "China Brawl Stars EN", "Gene Brawl", "Nulls Brawl"];
+      names.forEach(name => {
+        const link = prompt("New download link for " + name + ": (Leave empty to keep unchanged)");
+        if (link !== null && link.trim() !== "") {
+          db.ref('mods/' + name).set(link.trim());
+        }
+      });
+      alert("Links updated.");
+    } else {
+      alert("Wrong password.");
+    }
+  }
+
+  function updateDownloadButtons() {
+    const boxes = document.querySelectorAll(".mod-box");
+    boxes.forEach(box => {
+      const title = box.querySelector("h2").innerText;
+      const downloadBtn = box.querySelector(".download-button");
+      db.ref("mods/" + title).once("value").then(snapshot => {
+        const link = snapshot.val();
+        if (link) {
+          downloadBtn.onclick = () => window.open(link, "_blank");
+        }
+      });
+    });
+  }
+
+  window.addEventListener("load", updateDownloadButtons);
 </script>
+
 </body>
 </html>
