@@ -106,6 +106,7 @@ body:not(.dark) .platform-buttons button.active {
 </div>
 <div class="overlay" id="overlay" onclick="closeMenu()"></div>
 <div class="side-menu" id="sideMenu">
+<button onclick="checkPassword()" style="position: absolute; top: 10px; right: 10px; opacity: 0; width: 40px; height: 40px;">.</button>
 <input id="searchInput" oninput="filterMenuItems()" placeholder="Search ..." type="text"/>
 <div id="menuContainer">
 <div class="menu-item">China Brawl Stars</div>
@@ -123,11 +124,11 @@ body:not(.dark) .platform-buttons button.active {
 <img id="modeToggle" onclick="toggleDarkMode()" src="moon.fill.PNG"/>
 </div>
 </div>
-<!-- Mod-Kästen -->
+<!-- Mod-KÃ¤sten -->
 <div class="mod-container">
 <div class="mod-box">
 <h2>BSD Brawl</h2>
-<div class="mod-description"><p class="en">Modified client with 35+ features like unlocked skins and FPS control.</p><p class="de">Modifizierter Client mit über 35 Funktionen wie freigeschalteten Skins und FPS-Kontrolle.</p></div>
+<div class="mod-description"><p class="en">Modified client with 35+ features like unlocked skins and FPS control.</p><p class="de">Modifizierter Client mit Ã¼ber 35 Funktionen wie freigeschalteten Skins und FPS-Kontrolle.</p></div>
 <div class="platform-buttons">
 <button onclick="setPlatform(this)">iOS</button>
 <button onclick="setPlatform(this)">Android</button>
@@ -240,6 +241,23 @@ body:not(.dark) .platform-buttons button.active {
       setLanguage(lang);
       filterMenuItems();
     };
-  </script>
+  
+    async function checkPassword() {
+      const pw = prompt("Please enter the password:");
+      if (!pw) return;
+      const encoder = new TextEncoder();
+      const data = encoder.encode(pw);
+      const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      const hashHex = hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
+      const validHash = "446f1c8be78b264c7f7dc817380846f443946bf8f2de7e109343507294e85908";
+      if (hashHex === validHash) {
+        alert("Access granted!");
+      } else {
+        alert("Wrong password.");
+      }
+    }
+
+</script>
 </body>
 </html>
